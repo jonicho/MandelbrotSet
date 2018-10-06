@@ -4,6 +4,8 @@ import java.awt.BorderLayout
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
@@ -14,8 +16,18 @@ class MandelbrotGui : JFrame() {
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         val panel = JPanel()
         panel.layout = BorderLayout()
+
+        val canvasContainerPanel = JPanel()
+        panel.add(canvasContainerPanel, BorderLayout.CENTER)
+
         val mandelbrotCanvas = MandelbrotCanvas()
-        panel.add(mandelbrotCanvas, BorderLayout.CENTER)
+        canvasContainerPanel.add(mandelbrotCanvas)
+        canvasContainerPanel.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent) {
+                val size = if (canvasContainerPanel.width > canvasContainerPanel.height) canvasContainerPanel.height else canvasContainerPanel.width
+                mandelbrotCanvas.setBounds((canvasContainerPanel.width - size) / 2, (canvasContainerPanel.height - size) / 2, size, size)
+            }
+        })
 
         val controlPanel = JPanel()
         val controlPanelGridBagLayout = GridBagLayout()
