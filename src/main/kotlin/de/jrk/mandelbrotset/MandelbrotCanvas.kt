@@ -2,17 +2,35 @@ package de.jrk.mandelbrotset
 
 import java.awt.Color
 import java.awt.Graphics
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import java.awt.image.BufferedImage
 import javax.swing.JPanel
 
 class MandelbrotCanvas : JPanel() {
-    var cX = -2.0
-    var cY = -2.0
-    var cWidth = 4.0
-    var cHeight = 4.0
+    private var cX = -2.0
+    private var cY = -2.0
+    private var cWidth = 4.0
+    private var cHeight = 4.0
+    private var set = Array(0) { Array(0) { 0 } }
     var hueOffset = 0f
-    var set = Array(0) { Array(0) {0} }
     var iterations = 10
+    var zoomFactor = 2.0
+        set(value) {
+            if (value > 0) field = value
+        }
+
+    init {
+        addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent) {
+                zoom(e.x, e.y, when (e.button) {
+                    MouseEvent.BUTTON1 -> zoomFactor
+                    MouseEvent.BUTTON3 -> 1 / zoomFactor
+                    else -> 1.0
+                })
+            }
+        })
+    }
 
     override fun paintComponent(g: Graphics) {
         if (set.isEmpty()) {
@@ -30,5 +48,19 @@ class MandelbrotCanvas : JPanel() {
 
     fun generateMandelbrotSet() {
         set = MandelbrotSet.generateMandelbrotSet(width, height, cX, cY, cWidth, cHeight, iterations)
+    }
+
+    fun zoom(centerX: Int, centerY: Int, factor: Double) {
+        val centerCX = cX + (cWidth * centerX) / width
+        val centerCY = cY + (cHeight * centerY) / height
+        println("$centerCX, $centerCY, $factor")
+        cX = centerCX - cWidth / 2
+        cY = centerCY - cHeight / 2
+        cX += (cWidth - cWidth / factor) / 2
+        cY += (cHeight - cHeight / factor) / 2
+        cWidth /= factor
+        cHeight /= factor
+        generateMandelbrotSet()
+        repaint()
     }
 }
