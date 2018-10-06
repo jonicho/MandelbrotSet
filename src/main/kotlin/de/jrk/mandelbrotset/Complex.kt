@@ -6,7 +6,7 @@ import kotlin.math.sqrt
 data class Complex(val re: Double, val im: Double) {
     constructor(d: Double) : this(d, 0.0)
 
-    val absuluteValue get() = sqrt(re.pow(2) + im.pow(2))
+    val absoluteValue get() = sqrt(re.pow(2) + im.pow(2))
 
     operator fun plus(other: Complex) = Complex(re + other.re, im + other.im)
 
