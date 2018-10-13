@@ -12,7 +12,8 @@ class MandelbrotCanvas : JPanel() {
     private var cY = -2.0
     private var cWidth = 4.0
     private var cHeight = 4.0
-    private var set = Array(0) { Array(0) { 0 } }
+    private val mandelbrotGenerator = MandelbrotGenerator()
+    private val set get() = mandelbrotGenerator.set
     var hueOffset = 0f
     var iterations = 10
     var zoomFactor = 2.0
@@ -30,12 +31,18 @@ class MandelbrotCanvas : JPanel() {
                 })
             }
         })
+
+        Thread {
+            var wasGenerating = false
+            while (true) {
+                if (wasGenerating || mandelbrotGenerator.isGenerating) repaint()
+                wasGenerating = mandelbrotGenerator.isGenerating
+                Thread.sleep(100)
+            }
+        }.start()
     }
 
     override fun paintComponent(g: Graphics) {
-        if (set.isEmpty()) {
-            generateMandelbrotSet()
-        }
         val img = BufferedImage(set.size, set[0].size, BufferedImage.TYPE_INT_RGB)
         for (x in 0 until set.size) {
             for (y in 0 until set[0].size) {
@@ -47,13 +54,12 @@ class MandelbrotCanvas : JPanel() {
     }
 
     fun generateMandelbrotSet() {
-        set = MandelbrotSet.generateMandelbrotSet(width, height, cX, cY, cWidth, cHeight, iterations)
+        mandelbrotGenerator.generateMandelbrotSet(width, height, cX, cY, cWidth, cHeight, iterations)
     }
 
     fun zoom(centerX: Int, centerY: Int, factor: Double) {
         val centerCX = cX + (cWidth * centerX) / width
         val centerCY = cY + (cHeight * centerY) / height
-        println("$centerCX, $centerCY, $factor")
         cX = centerCX - cWidth / 2
         cY = centerCY - cHeight / 2
         cX += (cWidth - cWidth / factor) / 2

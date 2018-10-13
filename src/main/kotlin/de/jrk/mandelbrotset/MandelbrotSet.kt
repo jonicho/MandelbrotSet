@@ -11,17 +11,15 @@ object MandelbrotSet {
         return -1
     }
 
-    fun generateMandelbrotSet(width: Int, height: Int, cX: Double, cY: Double, cWidth: Double, cHeight: Double, iterations: Int): Array<Array<Int>> {
-        val set = Array(width) {Array(height) {0} }
-        for (x in 0 until width) {
-            for (y in 0 until height) {
+    fun generateMandelbrotSet(set: Array<Array<Int>>, cX: Double, cY: Double, cWidth: Double, cHeight: Double, iterations: Int, x: Int = 0, y: Int = 0, width: Int = set.size, height: Int = set[0].size) {
+        for (x in x until x + width) {
+            for (y in y until y + height) {
                 val c = Complex(
-                        (x.toDouble() / width) * cWidth + cX,
-                        (y.toDouble() / height) * cHeight + cY
+                        (x.toDouble() / set.size) * cWidth + cX,
+                        (y.toDouble() / set[0].size) * cHeight + cY
                 )
                 set[x][y] = testMandelbrot(c, iterations)
             }
         }
-        return set
     }
 }
