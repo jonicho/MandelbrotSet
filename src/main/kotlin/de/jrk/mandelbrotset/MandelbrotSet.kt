@@ -11,7 +11,7 @@ object MandelbrotSet {
         return -1
     }
 
-    fun generateMandelbrotSet(set: Array<Array<Int>>, cX: Double, cY: Double, cWidth: Double, cHeight: Double, iterations: Int, x: Int = 0, y: Int = 0, width: Int = set.size, height: Int = set[0].size) {
+    fun generateMandelbrotSet(set: Array<Array<Int>>, cX: Double, cY: Double, cWidth: Double, cHeight: Double, iterations: Int, x: Int = 0, y: Int = 0, width: Int = set.size, height: Int = set[0].size, stopWhen: () -> Boolean = { false }) {
         for (x in x until x + width) {
             for (y in y until y + height) {
                 val c = Complex(
@@ -19,6 +19,9 @@ object MandelbrotSet {
                         (y.toDouble() / set[0].size) * cHeight + cY
                 )
                 set[x][y] = testMandelbrot(c, iterations)
+                if (stopWhen()) {
+                    return
+                }
             }
         }
     }

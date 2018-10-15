@@ -3,18 +3,20 @@ package de.jrk.mandelbrotset
 import kotlin.math.absoluteValue
 
 class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
+    private var generatorThread: Thread = Thread()
+    private var stop = false
     var set = Array(1) { Array(1) { 0 } }
         private set
     var isGenerating = false
         private set
 
-    fun generateMandelbrotSet(width: Int, height: Int, cX: Double, cY: Double, cWidth: Double, cHeight: Double, iterations: Int) {
-        if (isGenerating) return
+    fun generateMandelbrotSet(width: Int, height: Int, cX: Double, cY: Double, cWidth: Double, cHeight: Double, iterations: Int) = synchronized(this) {
+        if (isGenerating) stopGenerating()
         if (set.size != width || set[0].size != height) {
             set = Array(width) { Array(height) { 0 } }
         }
 
-        Thread {
+        generatorThread = Thread {
             isGenerating = true
             val spiralBatches = object {
                 //see: https://stackoverflow.com/a/1196922
@@ -51,11 +53,12 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
             }
             val threads = Array(numThreads) { i ->
                 Thread {
-                    while (!spiralBatches.isFinished) {
+                    while (!spiralBatches.isFinished && !stop) {
                         val (x, y) = spiralBatches.nextBatch()
                         MandelbrotSet.generateMandelbrotSet(set, cX, cY, cWidth, cHeight, iterations,
                                 x = Math.round(x * set.size.toDouble() / numBatchRows).toInt(), width = Math.round(set.size.toDouble() / numBatchRows).toInt(),
-                                y = Math.round(y * set.size.toDouble() / numBatchRows).toInt(), height = Math.round(set.size.toDouble() / numBatchRows).toInt())
+                                y = Math.round(y * set.size.toDouble() / numBatchRows).toInt(), height = Math.round(set.size.toDouble() / numBatchRows).toInt(),
+                                stopWhen = { stop })
                     }
                 }.also {
                     it.priority = Thread.MIN_PRIORITY
@@ -66,6 +69,13 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
                 thread.join()
             }
             isGenerating = false
-        }.start()
+        }
+        generatorThread.start()
+    }
+
+    fun stopGenerating() {
+        stop = true
+        generatorThread.join()
+        stop = false
     }
 }
