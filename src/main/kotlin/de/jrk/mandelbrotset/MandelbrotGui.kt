@@ -67,12 +67,24 @@ class MandelbrotGui : JFrame() {
         controlPanelGridBagLayout.setConstraints(hueOffsetSlider, gridBagConstraints(1, 1))
         controlPanel.add(hueOffsetSlider)
 
+        val positionLabel = JLabel("position")
+        controlPanelGridBagLayout.setConstraints(positionLabel, gridBagConstraints(0, 2))
+        controlPanel.add(positionLabel)
+
+        val positionTextField = JTextField()
+        positionTextField.isEditable = false
+        controlPanelGridBagLayout.setConstraints(positionTextField, gridBagConstraints(1, 2, fill = GridBagConstraints.BOTH))
+        controlPanel.add(positionTextField)
+        mandelbrotCanvas.addZoomListener({
+            positionTextField.text = with(mandelbrotCanvas) { "$cX;$cY;$cWidth;$cHeight" }
+        }.also { it() })
+
         val generateButton = JButton("generate set")
         generateButton.addActionListener {
             mandelbrotCanvas.generateMandelbrotSet()
             mandelbrotCanvas.repaint()
         }
-        controlPanelGridBagLayout.setConstraints(generateButton, gridBagConstraints(0, 2, 2))
+        controlPanelGridBagLayout.setConstraints(generateButton, gridBagConstraints(0, 3, 2, fill = GridBagConstraints.HORIZONTAL))
         controlPanel.add(generateButton)
 
         add(panel)

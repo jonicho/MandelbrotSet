@@ -8,10 +8,14 @@ import java.awt.image.BufferedImage
 import javax.swing.JPanel
 
 class MandelbrotCanvas : JPanel() {
-    private var cX = -2.0
-    private var cY = -2.0
-    private var cWidth = 4.0
-    private var cHeight = 4.0
+    var cX = -2.0
+        private set
+    var cY = -2.0
+        private set
+    var cWidth = 4.0
+        private set
+    var cHeight = 4.0
+        private set
     private val mandelbrotGenerator = MandelbrotGenerator()
     private val set get() = mandelbrotGenerator.set
     var hueOffset = 0f
@@ -20,8 +24,13 @@ class MandelbrotCanvas : JPanel() {
         set(value) {
             if (value > 0) field = value
         }
+    val zoomListeners = ArrayList<() -> Unit>()
 
     init {
+        addZoomListener {
+            generateMandelbrotSet()
+            repaint()
+        }
         addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
                 zoom(e.x, e.y, when (e.button) {
@@ -64,7 +73,10 @@ class MandelbrotCanvas : JPanel() {
         cY += (cHeight - cHeight / factor) / 2
         cWidth /= factor
         cHeight /= factor
-        generateMandelbrotSet()
-        repaint()
+        zoomListeners.forEach { it() }
+    }
+
+    fun addZoomListener(zoomListener: () -> Unit) {
+        zoomListeners.add(zoomListener)
     }
 }
