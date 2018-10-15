@@ -37,8 +37,8 @@ class MandelbrotCanvas : JPanel() {
         val img = BufferedImage(set.size, set[0].size, BufferedImage.TYPE_INT_RGB)
         for (x in 0 until set.size) {
             for (y in 0 until set[0].size) {
-                val hue = if (set[x][y] == -1) 0.0.toFloat() else set[x][y] / iterations.toFloat()
-                img.setRGB(x, y, Color.HSBtoRGB(hue + hueOffset, 0.5f, 1f))
+                val hue = if (set[x][y] == -1.0) 0.0 else set[x][y]
+                img.setRGB(x, y, Color.HSBtoRGB((hue + hueOffset).toFloat(), 0.5f, 1f))
             }
         }
         g.drawImage(img, 0, 0, null)
