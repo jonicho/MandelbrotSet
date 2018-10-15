@@ -34,26 +34,26 @@ class MandelbrotGui : JFrame() {
         controlPanel.layout = controlPanelGridBagLayout
         panel.add(controlPanel, BorderLayout.WEST)
 
-        val iterationsLabel = JLabel("iterations")
-        controlPanelGridBagLayout.setConstraints(iterationsLabel, gridBagConstraints(0, 0))
-        controlPanel.add(iterationsLabel)
+        val maxIterationsLabel = JLabel("maxIterations")
+        controlPanelGridBagLayout.setConstraints(maxIterationsLabel, gridBagConstraints(0, 0))
+        controlPanel.add(maxIterationsLabel)
 
-        val iterationsTextField = JTextField()
-        iterationsTextField.document.addDocumentListener(object : DocumentListener {
+        val maxIterationsTextField = JTextField()
+        maxIterationsTextField.document.addDocumentListener(object : DocumentListener {
             override fun changedUpdate(e: DocumentEvent?) = update()
             override fun insertUpdate(e: DocumentEvent?) = update()
             override fun removeUpdate(e: DocumentEvent?) = update()
 
             private fun update() {
                 try {
-                    mandelbrotCanvas.iterations = iterationsTextField.text.toInt()
+                    mandelbrotCanvas.maxIterations = maxIterationsTextField.text.toInt()
                 } catch (e: NumberFormatException) {
                 }
             }
 
         })
-        controlPanelGridBagLayout.setConstraints(iterationsTextField, gridBagConstraints(1, 0, fill = GridBagConstraints.BOTH))
-        controlPanel.add(iterationsTextField)
+        controlPanelGridBagLayout.setConstraints(maxIterationsTextField, gridBagConstraints(1, 0, fill = GridBagConstraints.BOTH))
+        controlPanel.add(maxIterationsTextField)
 
         val hueOffsetLabel = JLabel("hue offset")
         controlPanelGridBagLayout.setConstraints(hueOffsetLabel, gridBagConstraints(0, 1))
