@@ -31,15 +31,6 @@ class MandelbrotCanvas : JPanel() {
                 })
             }
         })
-
-        Thread {
-            var wasGenerating = false
-            while (true) {
-                if (wasGenerating || mandelbrotGenerator.isGenerating) repaint()
-                wasGenerating = mandelbrotGenerator.isGenerating
-                Thread.sleep(100)
-            }
-        }.start()
     }
 
     override fun paintComponent(g: Graphics) {
@@ -55,6 +46,13 @@ class MandelbrotCanvas : JPanel() {
 
     fun generateMandelbrotSet() {
         mandelbrotGenerator.generateMandelbrotSet(width, height, cX, cY, cWidth, cHeight, iterations)
+        Thread {
+            while (mandelbrotGenerator.isGenerating) {
+                repaint()
+                Thread.sleep(10)
+            }
+            repaint()
+        }.start()
     }
 
     fun zoom(centerX: Int, centerY: Int, factor: Double) {
