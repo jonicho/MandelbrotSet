@@ -52,6 +52,7 @@ class MandelbrotGui : JFrame() {
             }
 
         })
+        maxIterationsTextField.text = "100"
         controlPanelGridBagLayout.setConstraints(maxIterationsTextField, gridBagConstraints(1, 0, fill = GridBagConstraints.BOTH))
         controlPanel.add(maxIterationsTextField)
 
