@@ -13,6 +13,7 @@ import javax.swing.event.DocumentListener
 class MandelbrotGui : JFrame() {
     init {
         setSize(800, 600)
+        setLocationRelativeTo(null)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         val panel = JPanel()
         panel.layout = BorderLayout()
