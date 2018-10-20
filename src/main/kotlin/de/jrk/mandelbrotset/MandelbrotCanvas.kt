@@ -14,13 +14,14 @@ class MandelbrotCanvas : JPanel() {
         private set
     var cHeight = 4.0
         private set
-    private val mandelbrotGenerator = MandelbrotGenerator()
-    private val set get() = mandelbrotGenerator.set
     var maxIterations = 10
     var zoomFactor = 2.0
         set(value) {
             if (value > 0) field = value
         }
+    var coloring = MandelbrotColoring.getColoring(0)
+    private val mandelbrotGenerator = MandelbrotGenerator()
+    private val set get() = mandelbrotGenerator.set
     private val zoomListeners = ArrayList<() -> Unit>()
     private val generateListeners = ArrayList<() -> Unit>()
     val progress get() = mandelbrotGenerator.progress
@@ -52,7 +53,7 @@ class MandelbrotCanvas : JPanel() {
     }
 
     override fun paintComponent(g: Graphics) {
-        g.drawImage(MandelbrotRenderer.render(set), 0, 0, null)
+        g.drawImage(MandelbrotRenderer.render(set, coloring), 0, 0, null)
     }
 
     fun generateMandelbrotSet() {
