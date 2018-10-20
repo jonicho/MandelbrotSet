@@ -86,8 +86,22 @@ class MandelbrotGui : JFrame() {
             mandelbrotCanvas.generateMandelbrotSet()
             mandelbrotCanvas.repaint()
         }
-        controlPanelGridBagLayout.setConstraints(generateButton, gridBagConstraints(0, 3, 2, fill = GridBagConstraints.HORIZONTAL))
+        controlPanelGridBagLayout.setConstraints(generateButton, gridBagConstraints(0, 3, 2, fill = GridBagConstraints.BOTH))
         controlPanel.add(generateButton)
+
+
+        val progressBar = JProgressBar(0, 1000)
+        mandelbrotCanvas.addGenerateListener {
+            Thread {
+                while (mandelbrotCanvas.isGenerating) {
+                    progressBar.value = (mandelbrotCanvas.progress * 1000).toInt()
+                    Thread.sleep(100)
+                }
+                progressBar.value = (mandelbrotCanvas.progress * 1000).toInt()
+            }.start()
+        }
+        panel.add(progressBar, BorderLayout.SOUTH)
+
 
         add(panel)
         isVisible = true
@@ -98,8 +112,8 @@ class MandelbrotGui : JFrame() {
                                    gridy: Int = GridBagConstraints.RELATIVE,
                                    gridwidth: Int = 1,
                                    gridheight: Int = 1,
-                                   weightx: Double = 0.0,
-                                   weighty: Double = 0.0,
+                                   weightx: Double = 1.0,
+                                   weighty: Double = 1.0,
                                    anchor: Int = GridBagConstraints.CENTER,
                                    fill: Int = GridBagConstraints.NONE,
                                    insets: Insets = Insets(0, 0, 0, 0),

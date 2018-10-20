@@ -24,12 +24,24 @@ class MandelbrotCanvas : JPanel() {
         set(value) {
             if (value > 0) field = value
         }
-    val zoomListeners = ArrayList<() -> Unit>()
+    private val zoomListeners = ArrayList<() -> Unit>()
+    private val generateListeners = ArrayList<() -> Unit>()
+    val progress get() = mandelbrotGenerator.progress
+    val isGenerating get() = mandelbrotGenerator.isGenerating
 
     init {
         addZoomListener {
             generateMandelbrotSet()
             repaint()
+        }
+        addGenerateListener {
+            Thread {
+                while (mandelbrotGenerator.isGenerating) {
+                    repaint()
+                    Thread.sleep(10)
+                }
+                repaint()
+            }.start()
         }
         addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent) {
@@ -55,13 +67,7 @@ class MandelbrotCanvas : JPanel() {
 
     fun generateMandelbrotSet() {
         mandelbrotGenerator.generateMandelbrotSet(width, height, cX, cY, cWidth, cHeight, maxIterations)
-        Thread {
-            while (mandelbrotGenerator.isGenerating) {
-                repaint()
-                Thread.sleep(10)
-            }
-            repaint()
-        }.start()
+        generateListeners.forEach { it() }
     }
 
     fun zoom(centerX: Int, centerY: Int, factor: Double) {
@@ -78,5 +84,9 @@ class MandelbrotCanvas : JPanel() {
 
     fun addZoomListener(zoomListener: () -> Unit) {
         zoomListeners.add(zoomListener)
+    }
+
+    fun addGenerateListener(generateListener: () -> Unit) {
+        generateListeners.add(generateListener)
     }
 }

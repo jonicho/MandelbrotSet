@@ -4,12 +4,16 @@ import kotlin.math.absoluteValue
 
 class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
     private var generatorThread: Thread = Thread()
+    private var threads = emptyArray<GeneratorThread>()
     private var stop = false
     var set = Array(1) { Array(1) { 0.0 } }
         private set
     var isGenerating = false
         private set
     private var batchGenerator = BatchGenerator()
+    val progress
+        get() =
+            threads.map { it.batchProgress }.reduce { acc, d -> acc + d } / batchGenerator.max
 
     fun generateMandelbrotSet(width: Int, height: Int, cX: Double, cY: Double, cWidth: Double, cHeight: Double, maxIterations: Int) = synchronized(this) {
         if (isGenerating) stopGenerating()
@@ -20,7 +24,7 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
         generatorThread = Thread {
             isGenerating = true
             batchGenerator = BatchGenerator()
-            val threads = Array(numThreads) { _ ->
+            threads = Array(numThreads) { _ ->
                 GeneratorThread(batchGenerator, cX, cY, cWidth, cHeight, maxIterations).also {
                     it.priority = Thread.MIN_PRIORITY
                     it.start()
@@ -41,6 +45,11 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
     }
 
     private inner class GeneratorThread(val batchGenerator: BatchGenerator, val cX: Double, val cY: Double, val cWidth: Double, val cHeight: Double, val maxIterations: Int) : Thread() {
+        private var completedBatches = 0
+        private var currentBatchProgress = 0.0
+
+        val batchProgress get() = completedBatches + currentBatchProgress
+
         override fun run() {
             while (!batchGenerator.isFinished) {
                 val (batchPosX, batchPosY) = batchGenerator.nextBatch()
@@ -48,6 +57,8 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
                 val batchY = Math.round(batchPosY * set.size.toDouble() / numBatchRows).toInt()
                 val batchWidth = Math.round(set.size.toDouble() / numBatchRows).toInt()
                 val batchHeight = Math.round(set.size.toDouble() / numBatchRows).toInt()
+                val max = batchWidth * batchHeight
+                var i = 0
                 for (x in batchX until batchX + batchWidth) {
                     for (y in batchY until batchY + batchHeight) {
                         if (stop) return
@@ -57,8 +68,12 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
                         )
                         val iterations = MandelbrotSet.testMandelbrot(c, maxIterations)
                         set[x][y] = if (iterations == -1) -1.0 else iterations.toDouble() / maxIterations
+                        i++
+                        currentBatchProgress = i.toDouble() / max
                     }
                 }
+                completedBatches++
+                currentBatchProgress = 0.0
             }
         }
     }
@@ -69,7 +84,7 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
         private var y = 0
         private var dx = 0
         private var dy = -1
-        private var max = numBatchRows * numBatchRows
+        val max = numBatchRows * numBatchRows
         private val halfNumBatchRows = numBatchRows / 2
         private var i = 0
         val isFinished get() = synchronized(this) { i >= max }
