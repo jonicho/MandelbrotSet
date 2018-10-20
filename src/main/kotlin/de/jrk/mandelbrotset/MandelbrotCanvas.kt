@@ -16,7 +16,6 @@ class MandelbrotCanvas : JPanel() {
         private set
     private val mandelbrotGenerator = MandelbrotGenerator()
     private val set get() = mandelbrotGenerator.set
-    var hueOffset = 0f
     var maxIterations = 10
     var zoomFactor = 2.0
         set(value) {

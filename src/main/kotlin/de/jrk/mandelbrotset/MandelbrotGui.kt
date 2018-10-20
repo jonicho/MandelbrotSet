@@ -54,25 +54,13 @@ class MandelbrotGui : JFrame() {
         controlPanelGridBagLayout.setConstraints(maxIterationsTextField, gridBagConstraints(1, 0, fill = GridBagConstraints.BOTH))
         controlPanel.add(maxIterationsTextField)
 
-        val hueOffsetLabel = JLabel("hue offset")
-        controlPanelGridBagLayout.setConstraints(hueOffsetLabel, gridBagConstraints(0, 1))
-        controlPanel.add(hueOffsetLabel)
-
-        val hueOffsetSlider = JSlider(0, 100, 0)
-        hueOffsetSlider.addChangeListener {
-            mandelbrotCanvas.hueOffset = hueOffsetSlider.value / 100f
-            mandelbrotCanvas.repaint()
-        }
-        controlPanelGridBagLayout.setConstraints(hueOffsetSlider, gridBagConstraints(1, 1))
-        controlPanel.add(hueOffsetSlider)
-
         val positionLabel = JLabel("position")
-        controlPanelGridBagLayout.setConstraints(positionLabel, gridBagConstraints(0, 2))
+        controlPanelGridBagLayout.setConstraints(positionLabel, gridBagConstraints(0, 1))
         controlPanel.add(positionLabel)
 
         val positionTextField = JTextField()
         positionTextField.isEditable = false
-        controlPanelGridBagLayout.setConstraints(positionTextField, gridBagConstraints(1, 2, fill = GridBagConstraints.BOTH))
+        controlPanelGridBagLayout.setConstraints(positionTextField, gridBagConstraints(1, 1, fill = GridBagConstraints.BOTH))
         controlPanel.add(positionTextField)
         mandelbrotCanvas.addZoomListener({
             positionTextField.text = with(mandelbrotCanvas) { "$cX;$cY;$cWidth;$cHeight" }
@@ -83,7 +71,7 @@ class MandelbrotGui : JFrame() {
             mandelbrotCanvas.generateMandelbrotSet()
             mandelbrotCanvas.repaint()
         }
-        controlPanelGridBagLayout.setConstraints(generateButton, gridBagConstraints(0, 3, 2, fill = GridBagConstraints.BOTH))
+        controlPanelGridBagLayout.setConstraints(generateButton, gridBagConstraints(0, 2, 2, fill = GridBagConstraints.BOTH))
         controlPanel.add(generateButton)
 
 
