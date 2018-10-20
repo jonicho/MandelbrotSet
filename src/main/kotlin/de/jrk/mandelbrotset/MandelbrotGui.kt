@@ -90,15 +90,23 @@ class MandelbrotGui : JFrame() {
         controlPanel.add(generateButton)
 
 
-        val progressBar = JProgressBar(0, 1000)
-        mandelbrotCanvas.addGenerateListener {
-            Thread {
-                while (mandelbrotCanvas.isGenerating) {
-                    progressBar.value = (mandelbrotCanvas.progress * 1000).toInt()
-                    Thread.sleep(100)
+        val progressBar = JProgressBar()
+        val progressBarThread = Thread {
+            while (true) {
+                progressBar.value = (mandelbrotCanvas.progress * progressBar.maximum).toInt()
+                try {
+                    if (mandelbrotCanvas.isGenerating) {
+                        Thread.sleep(100)
+                    } else {
+                        Thread.sleep(Long.MAX_VALUE)
+                    }
+                } catch (e: Exception) {
                 }
-                progressBar.value = (mandelbrotCanvas.progress * 1000).toInt()
-            }.start()
+            }
+        }
+        progressBarThread.start()
+        mandelbrotCanvas.addGenerateListener {
+            progressBarThread.interrupt()
         }
         panel.add(progressBar, BorderLayout.SOUTH)
 

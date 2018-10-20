@@ -13,7 +13,7 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
     private var batchGenerator = BatchGenerator()
     val progress
         get() =
-            threads.map { it.batchProgress }.reduce { acc, d -> acc + d } / batchGenerator.max
+            if (threads.isEmpty()) 1.0 else threads.map { it.batchProgress }.reduce { acc, d -> acc + d } / batchGenerator.max
 
     fun generateMandelbrotSet(width: Int, height: Int, cX: Double, cY: Double, cWidth: Double, cHeight: Double, maxIterations: Int) = synchronized(this) {
         if (isGenerating) stopGenerating()
