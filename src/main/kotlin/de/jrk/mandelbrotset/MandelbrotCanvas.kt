@@ -1,10 +1,8 @@
 package de.jrk.mandelbrotset
 
-import java.awt.Color
 import java.awt.Graphics
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.image.BufferedImage
 import javax.swing.JPanel
 
 class MandelbrotCanvas : JPanel() {
@@ -55,14 +53,7 @@ class MandelbrotCanvas : JPanel() {
     }
 
     override fun paintComponent(g: Graphics) {
-        val img = BufferedImage(set.size, set[0].size, BufferedImage.TYPE_INT_RGB)
-        for (x in 0 until set.size) {
-            for (y in 0 until set[0].size) {
-                val hue = if (set[x][y] == -1.0) 0.0 else set[x][y]
-                img.setRGB(x, y, Color.HSBtoRGB((hue + hueOffset).toFloat(), 0.5f, 1f))
-            }
-        }
-        g.drawImage(img, 0, 0, null)
+        g.drawImage(MandelbrotRenderer.render(set), 0, 0, null)
     }
 
     fun generateMandelbrotSet() {
