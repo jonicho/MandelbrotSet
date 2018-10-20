@@ -1,9 +1,6 @@
 package de.jrk.mandelbrotset
 
-import java.awt.BorderLayout
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
+import java.awt.*
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.*
@@ -96,8 +93,10 @@ class MandelbrotGui : JFrame() {
                 progressBar.value = (mandelbrotCanvas.progress * progressBar.maximum).toInt()
                 try {
                     if (mandelbrotCanvas.isGenerating) {
+                        progressBar.foreground = Color(255, 150, 150)
                         Thread.sleep(100)
                     } else {
+                        progressBar.foreground = Color(150, 255, 150)
                         Thread.sleep(Long.MAX_VALUE)
                     }
                 } catch (e: Exception) {
