@@ -8,6 +8,6 @@ object MandelbrotSet {
             if (z.squaredAbsoluteValue > 4) return i
             z = z * z + c
         } while (++i < maxIterations)
-        return -1
+        return 1
     }
 }
