@@ -53,10 +53,24 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
         override fun run() {
             while (!batchGenerator.isFinished) {
                 val (batchPosX, batchPosY) = batchGenerator.nextBatch()
-                val batchX = Math.round(batchPosX * set.size.toDouble() / numBatchRows).toInt()
-                val batchY = Math.round(batchPosY * set.size.toDouble() / numBatchRows).toInt()
-                val batchWidth = Math.round(set.size.toDouble() / numBatchRows).toInt()
-                val batchHeight = Math.round(set.size.toDouble() / numBatchRows).toInt()
+                var batchX = Math.round(batchPosX * set.size.toDouble() / numBatchRows).toInt()
+                var batchY = Math.round(batchPosY * set.size.toDouble() / numBatchRows).toInt()
+                var batchWidth = Math.round(set.size.toDouble() / numBatchRows).toInt()
+                var batchHeight = Math.round(set.size.toDouble() / numBatchRows).toInt()
+                if (batchX % batchWidth != 0) {
+                    batchX--
+                    batchWidth++
+                }
+                if (batchY % batchHeight != 0) {
+                    batchY--
+                    batchHeight++
+                }
+                if (batchX + batchWidth >= set.size) {
+                    batchWidth -= (batchX + batchWidth) - set.size
+                }
+                if (batchY + batchHeight >= set.size) {
+                    batchHeight -= (batchY + batchHeight) - set.size
+                }
                 val max = batchWidth * batchHeight
                 var i = 0
                 for (x in batchX until batchX + batchWidth) {
