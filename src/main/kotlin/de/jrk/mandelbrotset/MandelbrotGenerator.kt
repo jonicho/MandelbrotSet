@@ -62,11 +62,9 @@ class MandelbrotGenerator(val numThreads: Int = 4, val numBatchRows: Int = 16) {
                 for (x in batchX until batchX + batchWidth) {
                     for (y in batchY until batchY + batchHeight) {
                         if (stop) return
-                        val c = Complex(
-                                (x.toDouble() / set.size) * cWidth + cX,
-                                (y.toDouble() / set[0].size) * cHeight + cY
-                        )
-                        val iterations = MandelbrotSet.testMandelbrot(c, maxIterations)
+                        val zRe = (x.toDouble() / set.size) * cWidth + cX
+                        val zIm = (y.toDouble() / set[0].size) * cHeight + cY
+                        val iterations = MandelbrotSet.testMandelbrot(zRe, zIm, maxIterations)
                         set[x][y] = if (iterations == -1) -1.0 else iterations.toDouble() / maxIterations
                         i++
                         currentBatchProgress = i.toDouble() / max

@@ -1,12 +1,15 @@
 package de.jrk.mandelbrotset
 
 object MandelbrotSet {
-    fun testMandelbrot(c: Complex, maxIterations: Int): Int {
-        var z = c
+    fun testMandelbrot(zRe: Double, zIm: Double, maxIterations: Int): Int {
+        var re = zRe
+        var im = zIm
         var i = 0
         do {
-            if (z.squaredAbsoluteValue > 4) return i
-            z = z * z + c
+            if (re * re + im * im > 4) return i
+            val newZre = re * re - im * im + zRe
+            im = im * re * 2 + zIm
+            re = newZre
         } while (++i < maxIterations)
         return 1
     }
